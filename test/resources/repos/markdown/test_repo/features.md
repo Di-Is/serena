@@ -49,28 +49,9 @@ This document demonstrates various Markdown features for testing.
 
 | Language | File Extension | LSP Server |
 |----------|---------------|------------|
-| Python | `.py` | Pyright |
-| JavaScript | `.js` | TypeScript |
 | Markdown | `.md` | Marksman |
 
-
 ## Code Blocks
-
-### Python Example
-
-```python
-def hello_world():
-    """Print hello world."""
-    print("Hello, World!")
-```
-
-### JavaScript Example
-
-```javascript
-function helloWorld() {
-    console.log("Hello, World!");
-}
-```
 
 ### YAML Example
 

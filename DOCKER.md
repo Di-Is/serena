@@ -1,10 +1,10 @@
-# Docker Setup for Serena (Experimental)
+# Docker Setup for Mdstar (Experimental)
 
-⚠️ **EXPERIMENTAL FEATURE**: The Docker setup for Serena is currently experimental and has several limitations. Please read this entire document before using Docker with Serena.
+⚠️ **EXPERIMENTAL FEATURE**: The Docker setup for Mdstar is currently experimental and has several limitations. Please read this entire document before using Docker with Mdstar.
 
 ## Overview
 
-Docker support allows you to run Serena in an isolated container environment, which provides better security isolation for the shell tool and consistent dependencies across different systems.
+Docker support allows you to run Mdstar in an isolated container environment, which provides better security isolation for the shell tool and consistent dependencies across different systems.
 
 ## Benefits
 
@@ -16,8 +16,8 @@ Docker support allows you to run Serena in an isolated container environment, wh
 
 ### 1. Configuration File Conflicts
 
-⚠️ **Critical**: Docker uses a separate configuration file (`serena_config.docker.yml`) to avoid path conflicts. When running in Docker:
-- Container paths will be stored in the configuration (e.g., `/workspaces/serena/...`)
+⚠️ **Critical**: Docker uses a separate configuration file (`mdstar_config.docker.yml`) to avoid path conflicts. When running in Docker:
+- Container paths will be stored in the configuration (e.g., `/workspaces/mdstar/...`)
 - These paths are incompatible with non-Docker usage
 - After using Docker, you cannot directly switch back to non-Docker usage without manual configuration adjustment
 
@@ -38,10 +38,10 @@ The web dashboard runs on port 24282 (0x5EDA) by default. You can configure this
 
 ```bash
 # Use default ports
-docker-compose up serena
+docker-compose up mdstar
 
 # Use custom ports
-SERENA_DASHBOARD_PORT=8080 docker-compose up serena
+MDSTAR_DASHBOARD_PORT=8080 docker-compose up mdstar
 ```
 
 ⚠️ **Note**: If the local port is occupied, you'll need to specify a different port using the environment variable.
@@ -58,14 +58,14 @@ SERENA_DASHBOARD_PORT=8080 docker-compose up serena
 
 ### Using Docker Compose (Recommended)
 
-1. **Production mode** (for using Serena as MCP server):
+1. **Production mode** (for using Mdstar as MCP server):
    ```bash
-   docker-compose up serena
+   docker-compose up mdstar
    ```
 
 2. **Development mode** (with source code mounted):
    ```bash
-   docker-compose up serena-dev
+   docker-compose up mdstar-dev
    ```
 
 Note: Edit the `compose.yaml` file to customize volume mounts for your projects.
@@ -74,15 +74,15 @@ Note: Edit the `compose.yaml` file to customize volume mounts for your projects.
 
 ```bash
 # Build the image
-docker build -t serena .
+docker build -t mdstar .
 
 # Run with current directory mounted
 docker run -it --rm \
   -v "$(pwd)":/workspace \
   -p 9121:9121 \
   -p 24282:24282 \
-  -e SERENA_DOCKER=1 \
-  serena
+  -e MDSTAR_DOCKER=1 \
+  mdstar
 ```
 
 ### Using Docker Compose with Merge Compose files
@@ -91,14 +91,14 @@ To use Docker Compose with merge files, you can create a `compose.override.yml` 
 
 ```yaml
 services:
-  serena:
+  mdstar:
     # To work with projects, you must mount them as volumes:
     volumes:
       - ./my-project:/workspace/my-project
       - /path/to/another/project:/workspace/another-project
     # Add the context for the IDE assistant option:
     command:
-      - "uv run --directory . serena-mcp-server --transport sse --port 9121 --host 0.0.0.0 --context ide-assistant"
+      - "uv run --directory . mdstar-mcp-server --transport sse --port 9121 --host 0.0.0.0 --context ide-assistant"
 ```
 
 See the [Docker Merge Compose files documentation](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/) for more details on using merge files.
@@ -107,7 +107,7 @@ See the [Docker Merge Compose files documentation](https://docs.docker.com/compo
 
 Once running, access the web dashboard at:
 - Default: http://localhost:24282/dashboard
-- Custom port: http://localhost:${SERENA_DASHBOARD_PORT}/dashboard
+- Custom port: http://localhost:${MDSTAR_DASHBOARD_PORT}/dashboard
 
 ## Volume Mounting
 
@@ -122,9 +122,9 @@ volumes:
 
 ## Environment Variables
 
-- `SERENA_DOCKER=1`: Set automatically to indicate Docker environment
-- `SERENA_PORT`: MCP server port (default: 9121)
-- `SERENA_DASHBOARD_PORT`: Web dashboard port (default: 24282)
+- `MDSTAR_DOCKER=1`: Set automatically to indicate Docker environment
+- `MDSTAR_PORT`: MCP server port (default: 9121)
+- `MDSTAR_DASHBOARD_PORT`: Web dashboard port (default: 24282)
 
 ## Troubleshooting
 
@@ -137,7 +137,7 @@ lsof -i :24282  # macOS/Linux
 netstat -ano | findstr :24282  # Windows
 
 # Use a different port
-SERENA_DASHBOARD_PORT=8080 docker-compose up serena
+MDSTAR_DASHBOARD_PORT=8080 docker-compose up mdstar
 ```
 
 ### Configuration Issues
@@ -145,9 +145,9 @@ SERENA_DASHBOARD_PORT=8080 docker-compose up serena
 If you need to reset Docker configuration:
 ```bash
 # Remove Docker-specific config
-rm serena_config.docker.yml
+rm mdstar_config.docker.yml
 
-# Serena will auto-generate a new one on next run
+# Mdstar will auto-generate a new one on next run
 ```
 
 ### Project Access Issues
@@ -162,7 +162,7 @@ Ensure projects are properly mounted:
 To switch between Docker and non-Docker usage:
 
 1. **Docker to Non-Docker**:
-   - Manually edit project paths in `serena_config.yml`
+   - Manually edit project paths in `mdstar_config.yml`
    - Change container paths to host paths
    - Or use separate config files for each environment
 

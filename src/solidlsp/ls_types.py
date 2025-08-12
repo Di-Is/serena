@@ -215,7 +215,7 @@ class UnifiedSymbolInformation(TypedDict):
     if necessary). It can't be used to re-infer a hierarchy for the document
     symbols. 
     
-    Note: within Serena, the parent attribute was added and should be used instead. 
+    Note: within Mdstar, the parent attribute was added and should be used instead. 
     Most LS don't provide containerName.
     """
 
@@ -239,7 +239,7 @@ class UnifiedSymbolInformation(TypedDict):
     since it is sometimes useful to have the children of the symbol as a user-facing feature."""
 
     parent: NotRequired[UnifiedSymbolInformation | None]
-    """The parent of the symbol, if there is any. Added with Serena, not part of the LSP.
+    """The parent of the symbol, if there is any. Added with Mdstar, not part of the LSP.
     All symbols except the root packages will have a parent.
     """
 

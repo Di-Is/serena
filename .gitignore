@@ -196,7 +196,7 @@ dmypy.json
 pylint.html
 .pylint.d
 
-# Serena-specific
+# Mdstar-specific
 /*.yml
 !*.template.yml
 /agent-ui
@@ -217,7 +217,7 @@ pylint.html
 
 tmp/
 
-.serena/
+.mdstar/
 .vscode/
 
 # Claude settings

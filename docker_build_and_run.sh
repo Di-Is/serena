@@ -1,5 +1,5 @@
 #!/usr/bin/bash
 
-docker build -t serena .
+docker build -t mdstar .
 
-docker run -it --rm -v "$(pwd)":/workspace serena
+docker run -it --rm -v "$(pwd)":/workspace mdstar

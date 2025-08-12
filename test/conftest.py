@@ -4,9 +4,9 @@ from pathlib import Path
 import pytest
 from sensai.util.logging import configure
 
-from serena.constants import SERENA_MANAGED_DIR_IN_HOME
-from serena.project import Project
-from serena.util.file_system import GitignoreParser
+from mdstar.constants import MDSTAR_MANAGED_DIR_IN_HOME
+from mdstar.project import Project
+from mdstar.util.file_system import GitignoreParser
 from solidlsp.ls import SolidLanguageServer
 from solidlsp.ls_config import Language, LanguageServerConfig
 from solidlsp.ls_logger import LanguageServerLogger
@@ -49,7 +49,7 @@ def create_ls(
     config = LanguageServerConfig(code_language=language, ignored_paths=ignored_paths, trace_lsp_communication=trace_lsp_communication)
     logger = LanguageServerLogger(log_level=log_level)
     return SolidLanguageServer.create(
-        config, logger, repo_path, solidlsp_settings=SolidLSPSettings(solidlsp_dir=SERENA_MANAGED_DIR_IN_HOME)
+        config, logger, repo_path, solidlsp_settings=SolidLSPSettings(solidlsp_dir=MDSTAR_MANAGED_DIR_IN_HOME)
     )
 
 

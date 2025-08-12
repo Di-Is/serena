@@ -42,18 +42,18 @@ ENV PATH="${PATH}:/root/.local/bin"
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Set the working directory
-WORKDIR /workspaces/serena
+WORKDIR /workspaces/mdstar
 
 # Development target
 FROM base AS development
 # Copy all files for development
-COPY . /workspaces/serena/
+COPY . /workspaces/mdstar/
 
 # Create virtual environment and install dependencies with dev extras
 RUN uv venv
 RUN . .venv/bin/activate
 RUN uv pip install --all-extras -r pyproject.toml -e .
-ENV PATH="/workspaces/serena/.venv/bin:${PATH}"
+ENV PATH="/workspaces/mdstar/.venv/bin:${PATH}"
 
 # Entrypoint to ensure environment is activated
 ENTRYPOINT ["/bin/bash", "-c", "source .venv/bin/activate && $0 $@"]
@@ -61,15 +61,15 @@ ENTRYPOINT ["/bin/bash", "-c", "source .venv/bin/activate && $0 $@"]
 # Production target
 FROM base AS production
 # Copy only necessary files for production
-COPY pyproject.toml /workspaces/serena/
-COPY README.md /workspaces/serena/
-COPY src/ /workspaces/serena/src/
+COPY pyproject.toml /workspaces/mdstar/
+COPY README.md /workspaces/mdstar/
+COPY src/ /workspaces/mdstar/src/
 
 # Create virtual environment and install dependencies (production only)
 RUN uv venv
 RUN . .venv/bin/activate
 RUN uv pip install -r pyproject.toml -e .
-ENV PATH="/workspaces/serena/.venv/bin:${PATH}"
+ENV PATH="/workspaces/mdstar/.venv/bin:${PATH}"
 
 # Entrypoint to ensure environment is activated
 ENTRYPOINT ["/bin/bash", "-c", "source .venv/bin/activate && $0 $@"]

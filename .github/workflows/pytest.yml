@@ -31,7 +31,7 @@ jobs:
       - name: Ensure cached directory exist before calling cache-related actions
         shell: bash
         run: |
-          mkdir -p $HOME/.serena/language_servers/static
+          mkdir -p $HOME/.mdstar/language_servers/static
           mkdir -p $HOME/.cache/go-build
           mkdir -p $HOME/go/bin
       # Add Go bin directory to PATH for this workflow
@@ -124,7 +124,7 @@ jobs:
         id: cache-language-servers
         uses: actions/cache@v3
         with:
-          path: ~/.serena/language_servers/static
+          path: ~/.mdstar/language_servers/static
           key: language-servers-${{ runner.os }}-v1
           restore-keys: |
             language-servers-${{ runner.os }}-

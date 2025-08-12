@@ -17,9 +17,9 @@ from pathlib import Path, PurePath
 from typing import Self, Union, cast
 
 import pathspec
+from mdstar.text_utils import MatchedConsecutiveLines
+from mdstar.util.file_system import match_path
 
-from serena.text_utils import MatchedConsecutiveLines
-from serena.util.file_system import match_path
 from solidlsp import ls_types
 from solidlsp.ls_config import Language, LanguageServerConfig
 from solidlsp.ls_exceptions import SolidLSPException
@@ -1576,7 +1576,7 @@ class SolidLanguageServer(ABC):
         """
         The path to the cache file for the document symbols.
         """
-        return Path(self.repository_root_path) / ".serena" / "cache" / self.language_id / "document_symbols_cache_v23-06-25.pkl"
+        return Path(self.repository_root_path) / ".mdstar" / "cache" / self.language_id / "document_symbols_cache_v23-06-25.pkl"
 
     def save_cache(self):
         with self._cache_lock:

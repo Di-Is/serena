@@ -4,10 +4,10 @@ Autogenerates the `prompt_factory.py` module
 
 from pathlib import Path
 
+from mdstar.constants import PROMPT_TEMPLATES_DIR_INTERNAL, REPO_ROOT
 from sensai.util import logging
 
 from interprompt import autogenerate_prompt_factory_module
-from serena.constants import PROMPT_TEMPLATES_DIR_INTERNAL, REPO_ROOT
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 def main():
     autogenerate_prompt_factory_module(
         prompts_dir=PROMPT_TEMPLATES_DIR_INTERNAL,
-        target_module_path=str(Path(REPO_ROOT) / "src" / "serena" / "generated" / "generated_prompt_factory.py"),
+        target_module_path=str(Path(REPO_ROOT) / "src" / "mdstar" / "generated" / "generated_prompt_factory.py"),
     )
 
 
