@@ -27,7 +27,10 @@ class LanguageParamRequest:
 
 
 def get_repo_path(language: Language) -> Path:
-    return Path(__file__).parent / "resources" / "repos" / language / "test_repo"
+    if language == Language.MARKDOWN:
+        return Path(__file__).parent / "resources" / "repos" / "markdown" / "test_repo"
+    else:
+        raise ValueError(f"Unsupported language: {language}")
 
 
 def create_ls(

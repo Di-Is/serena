@@ -5,15 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 **Essential Commands (use these exact commands):**
-- `uv run poe format` - Format code (BLACK + RUFF) - ONLY allowed formatting command
-- `uv run poe type-check` - Run mypy type checking - ONLY allowed type checking command  
-- `uv run poe test` - Run tests with default markers (excludes java/rust by default)
-- `uv run poe test -m "python or go"` - Run specific language tests
-- `uv run poe lint` - Check code style without fixing
+- `mise run format` - Format code with RUFF - ONLY allowed formatting command
+- `mise run type-check` - Run mypy type checking - ONLY allowed type checking command  
+- `mise run test` - Run tests
+- `mise run lint` - Check code style without fixing
 
 **Test Markers:**
 Available pytest markers for selective testing:
-- `python`, `go`, `java`, `rust`, `typescript`, `php`, `csharp`, `elixir`, `terraform`, `clojure`
+- `markdown` - for Markdown language server tests
 - `snapshot` - for symbolic editing operation tests
 
 **Project Management:**
@@ -100,7 +99,7 @@ Configuration is loaded from (in order of precedence):
 - **Symbol-based editing** - Uses LSP for precise code manipulation
 - **Caching strategy** - Reduces language server overhead
 - **Error recovery** - Automatic language server restart on crashes
-- **Multi-language support** - 13+ languages with LSP integration
+- **Markdown support** - Specialized for Markdown with Marksman LSP integration
 - **MCP protocol** - Exposes tools to AI agents via Model Context Protocol
 - **Async operation** - Non-blocking language server interactions
 
@@ -111,3 +110,86 @@ Configuration is loaded from (in order of precedence):
 - Language servers run as separate processes with LSP communication
 - Memory system enables persistent project knowledge
 - Context/mode system allows workflow customization
+
+## Creating Markdown-specific MCP Server from Serena
+
+### Migration Steps for Creating a Markdown MCP Server
+
+When creating a specialized Markdown MCP server based on Serena, follow these steps:
+
+#### 1. Code Removal Phase
+Start by removing unnecessary code for languages other than Markdown:
+
+**Language Servers to Remove:**
+- `src/solidlsp/language_servers/` - Keep only `markdown_language_server.py`
+- Remove all language servers except `markdown_language_server.py`
+
+**Language Enum Cleanup:**
+- In `src/solidlsp/ls_config.py`: Keep only `MARKDOWN` in the Language enum
+- Remove all other language entries
+
+**Factory Method Simplification:**
+- In `src/solidlsp/ls.py`: Simplify `SolidLanguageServer.create()` to only handle Markdown
+- Remove all conditional branches for other languages
+
+**Test Cleanup:**
+- Remove `test/resources/repos/` for all languages except markdown
+- Remove `test/solidlsp/` test directories except markdown tests
+
+**Tool Removal:**
+- Remove language-specific symbolic editing tools that don't apply to Markdown
+- Keep file operations and search tools
+
+#### 2. Markdown-specific Enhancements
+
+**Add Markdown-specific Tools:**
+- TOC generation tool
+- Heading level adjustment tool
+- Link validation tool
+- Code block extraction tool
+- Front matter parsing tool
+- Cross-reference management tool
+
+**Optimize for Markdown:**
+- Remove caching mechanisms designed for compiled languages
+- Simplify symbol retrieval for flat Markdown structure
+- Add Markdown-specific symbol kinds (headings, links, code blocks)
+
+#### 3. Configuration Simplification
+
+**Remove Multi-language Support:**
+- Simplify project configuration to assume Markdown-only projects
+- Remove language detection logic
+- Remove language-specific settings
+
+**Streamline Contexts:**
+- Create Markdown-specific contexts (documentation, wiki, notes)
+- Remove programming language contexts
+
+#### 4. Dependency Reduction
+
+**Remove Unnecessary Dependencies:**
+- Remove language server dependencies for other languages
+- Keep only Marksman and potentially other Markdown LSPs
+- Remove compilation/build tool integrations
+
+#### 5. Testing Strategy
+
+**Markdown-focused Tests:**
+- Test heading extraction
+- Test link resolution
+- Test TOC generation
+- Test code block identification
+- Test front matter parsing
+
+### Important Notes
+
+**Preserve Core Infrastructure:**
+- Keep the MCP server framework
+- Keep the LSP communication layer
+- Keep the basic tool system architecture
+
+**Marksman Integration Issues:**
+- Be aware that Marksman's document symbol support may vary
+- Current issue: When used in multi-language projects, wrong language server may process .md files
+- Solution: Dedicated Markdown MCP ensures Marksman is always used for .md files

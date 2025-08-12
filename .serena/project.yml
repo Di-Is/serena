@@ -1,7 +1,5 @@
-# language of the project (csharp, python, rust, java, typescript, javascript, go, cpp, or ruby)
 # Special requirements:
-#  * csharp: Requires the presence of a .sln file in the project folder.
-language: python
+language: markdown
 
 # whether to use the project's gitignore file to ignore files
 # Added on 2025-04-07

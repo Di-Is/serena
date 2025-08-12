@@ -1,0 +1,42 @@
+# mise configuration for serena project
+# Task runner configuration migrated from poethepoet
+
+[env]
+PYDEVD_DISABLE_FILE_VALIDATION = "1"
+# Default pytest markers - can be overridden
+PYTEST_MARKERS = "markdown"
+
+[tasks.test]
+description = "Run tests with default or custom markers"
+run = "uv run pytest test -vv -m \"${PYTEST_MARKERS:-markdown}\""
+
+[tasks.lint]
+description = "Check code style without fixing"
+run = "uv run ruff check src scripts test"
+
+[tasks.format]
+description = "Format code with ruff"
+run = [
+  "uv run ruff check --fix src scripts test",
+  "uv run ruff format src scripts test",
+]
+
+[tasks.type-check]
+description = "Run mypy type checking"
+run = "uv run mypy src/serena"
+
+# Additional helpful tasks
+[tasks.install]
+description = "Install project dependencies"
+run = "uv sync"
+
+[tasks.dev]
+description = "Run format, type-check, and test"
+depends = ["format", "type-check", "test"]
+
+[tasks.ci]
+description = "Run lint, type-check, and test (for CI)"
+depends = ["lint", "type-check", "test"]
+
+[tools]
+tokei = "latest"

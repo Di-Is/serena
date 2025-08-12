@@ -28,31 +28,7 @@ class Language(str, Enum):
     Possible languages with Multilspy.
     """
 
-    CSHARP = "csharp"
-    PYTHON = "python"
-    RUST = "rust"
-    JAVA = "java"
-    KOTLIN = "kotlin"
-    TYPESCRIPT = "typescript"
-    GO = "go"
-    RUBY = "ruby"
-    DART = "dart"
-    CPP = "cpp"
-    PHP = "php"
-    CLOJURE = "clojure"
-    ELIXIR = "elixir"
-    TERRAFORM = "terraform"
-    SWIFT = "swift"
-    BASH = "bash"
-    # Experimental or deprecated Language Servers
-    TYPESCRIPT_VTS = "typescript_vts"
-    """Use the typescript language server through the natively bundled vscode extension via https://github.com/yioneko/vtsls"""
-    PYTHON_JEDI = "python_jedi"
-    """Jedi language server for Python (instead of pyright, which is the default)"""
-    CSHARP_OMNISHARP = "csharp_omnisharp"
-    """OmniSharp language server for C# (instead of the default csharp-ls by microsoft).
-    Currently has problems with finding references, and generally seems less stable and performant.
-    """
+    MARKDOWN = "markdown"
 
     @classmethod
     def iter_all(cls, include_experimental: bool = False) -> Iterable[Self]:
@@ -64,51 +40,15 @@ class Language(str, Enum):
         """
         Check if the language server is experimental or deprecated.
         """
-        return self in {self.TYPESCRIPT_VTS, self.PYTHON_JEDI, self.CSHARP_OMNISHARP}
+        return False
 
     def __str__(self) -> str:
         return self.value
 
     def get_source_fn_matcher(self) -> FilenameMatcher:
         match self:
-            case self.PYTHON | self.PYTHON_JEDI:
-                return FilenameMatcher("*.py", "*.pyi")
-            case self.JAVA:
-                return FilenameMatcher("*.java")
-            case self.TYPESCRIPT | self.TYPESCRIPT_VTS:
-                # see https://github.com/oraios/serena/issues/204
-                path_patterns = []
-                for prefix in ["c", "m", ""]:
-                    for postfix in ["x", ""]:
-                        for base_pattern in ["ts", "js"]:
-                            path_patterns.append(f"*.{prefix}{base_pattern}{postfix}")
-                return FilenameMatcher(*path_patterns)
-            case self.CSHARP | self.CSHARP_OMNISHARP:
-                return FilenameMatcher("*.cs")
-            case self.RUST:
-                return FilenameMatcher("*.rs")
-            case self.GO:
-                return FilenameMatcher("*.go")
-            case self.RUBY:
-                return FilenameMatcher("*.rb")
-            case self.CPP:
-                return FilenameMatcher("*.cpp", "*.h", "*.hpp", "*.c", "*.hxx", "*.cc", "*.cxx")
-            case self.KOTLIN:
-                return FilenameMatcher("*.kt", "*.kts")
-            case self.DART:
-                return FilenameMatcher("*.dart")
-            case self.PHP:
-                return FilenameMatcher("*.php")
-            case self.CLOJURE:
-                return FilenameMatcher("*.clj", "*.cljs", "*.cljc", "*.edn")  # codespell:ignore edn
-            case self.ELIXIR:
-                return FilenameMatcher("*.ex", "*.exs")
-            case self.TERRAFORM:
-                return FilenameMatcher("*.tf", "*.tfvars", "*.tfstate")
-            case self.SWIFT:
-                return FilenameMatcher("*.swift")
-            case self.BASH:
-                return FilenameMatcher("*.sh", "*.bash")
+            case self.MARKDOWN:
+                return FilenameMatcher("*.md", "*.mdx", "*.markdown")
             case _:
                 raise ValueError(f"Unhandled language: {self}")
 

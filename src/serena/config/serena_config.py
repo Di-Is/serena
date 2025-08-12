@@ -198,12 +198,14 @@ class ProjectConfig(ToolInclusionDefinition, ToStringMixin):
                     raise ValueError(
                         f"No source files found in {project_root}\n\n"
                         f"To use Serena with this project, you need to either:\n"
-                        f"1. Add source files in one of the supported languages (Python, JavaScript/TypeScript, Java, C#, Rust, Go, Ruby, C++, PHP)\n"
+                        f"1. Add source files in Markdown format (.md, .mdx, .markdown)
+"
                         f"2. Create a project configuration file manually at:\n"
                         f"   {os.path.join(project_root, cls.rel_path_to_project_yml())}\n\n"
                         f"Example project.yml:\n"
                         f"  project_name: {project_name}\n"
-                        f"  language: python  # or typescript, java, csharp, rust, go, ruby, cpp, php\n"
+                        f"  language: markdown
+"
                     )
                 # find the language with the highest percentage
                 dominant_language = max(language_composition.keys(), key=lambda lang: language_composition[lang])

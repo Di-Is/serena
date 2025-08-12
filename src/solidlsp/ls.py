@@ -122,120 +122,22 @@ class SolidLanguageServer(ABC):
         solidlsp_settings: SolidLSPSettings | None = None,
     ) -> "SolidLanguageServer":
         """
-        Creates a language specific LanguageServer instance based on the given configuration, and appropriate settings for the programming language.
-
-        If language is Java, then ensure that jdk-17.0.6 or higher is installed, `java` is in PATH, and JAVA_HOME is set to the installation directory.
-        If language is JS/TS, then ensure that node (v18.16.0 or higher) is installed and in PATH.
+        Creates a Markdown LanguageServer instance based on the given configuration.
 
         :param repository_root_path: The root path of the repository.
         :param config: The Multilspy configuration.
         :param logger: The logger to use.
         :param timeout: the timeout for requests to the language server. If None, no timeout will be used.
-        :return LanguageServer: A language specific LanguageServer instance.
+        :return LanguageServer: A Markdown LanguageServer instance.
         """
         ls: SolidLanguageServer
         if solidlsp_settings is None:
             solidlsp_settings = SolidLSPSettings()
 
-        if config.code_language == Language.PYTHON:
-            from solidlsp.language_servers.pyright_server import (
-                PyrightServer,
-            )
+        if config.code_language == Language.MARKDOWN:
+            from solidlsp.language_servers.markdown_language_server import MarkdownLanguageServer
 
-            ls = PyrightServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-        elif config.code_language == Language.PYTHON_JEDI:
-            from solidlsp.language_servers.jedi_server import JediServer
-
-            ls = JediServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-        elif config.code_language == Language.JAVA:
-            from solidlsp.language_servers.eclipse_jdtls import (
-                EclipseJDTLS,
-            )
-
-            ls = EclipseJDTLS(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.KOTLIN:
-            from solidlsp.language_servers.kotlin_language_server import (
-                KotlinLanguageServer,
-            )
-
-            ls = KotlinLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.RUST:
-            from solidlsp.language_servers.rust_analyzer import (
-                RustAnalyzer,
-            )
-
-            ls = RustAnalyzer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.CSHARP:
-            from solidlsp.language_servers.csharp_language_server import CSharpLanguageServer
-
-            ls = CSharpLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-        elif config.code_language == Language.CSHARP_OMNISHARP:
-            from solidlsp.language_servers.omnisharp import OmniSharp
-
-            ls = OmniSharp(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-        elif config.code_language == Language.TYPESCRIPT:
-            from solidlsp.language_servers.typescript_language_server import (
-                TypeScriptLanguageServer,
-            )
-
-            ls = TypeScriptLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-        elif config.code_language == Language.TYPESCRIPT_VTS:
-            # VTS based Language Server implementation, need to experiment to see if it improves performance
-            from solidlsp.language_servers.vts_language_server import VtsLanguageServer
-
-            ls = VtsLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-        elif config.code_language == Language.GO:
-            from solidlsp.language_servers.gopls import Gopls
-
-            ls = Gopls(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.RUBY:
-            from solidlsp.language_servers.solargraph import Solargraph
-
-            ls = Solargraph(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.DART:
-            from solidlsp.language_servers.dart_language_server import DartLanguageServer
-
-            ls = DartLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.CPP:
-            from solidlsp.language_servers.clangd_language_server import ClangdLanguageServer
-
-            ls = ClangdLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.PHP:
-            from solidlsp.language_servers.intelephense import Intelephense
-
-            ls = Intelephense(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.CLOJURE:
-            from solidlsp.language_servers.clojure_lsp import ClojureLSP
-
-            ls = ClojureLSP(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.ELIXIR:
-            from solidlsp.language_servers.elixir_tools.elixir_tools import ElixirTools
-
-            ls = ElixirTools(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.TERRAFORM:
-            from solidlsp.language_servers.terraform_ls import TerraformLS
-
-            ls = TerraformLS(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.SWIFT:
-            from solidlsp.language_servers.sourcekit_lsp import SourceKitLSP
-
-            ls = SourceKitLSP(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
-
-        elif config.code_language == Language.BASH:
-            from solidlsp.language_servers.bash_language_server import BashLanguageServer
-
-            ls = BashLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
+            ls = MarkdownLanguageServer(config, logger, repository_root_path, solidlsp_settings=solidlsp_settings)
 
         else:
             logger.log(f"Language {config.code_language} is not supported", logging.ERROR)
@@ -918,15 +820,54 @@ class SolidLanguageServer(ABC):
             where the parent attribute will be the file symbol which in turn may have a package symbol as parent.
             If you need a symbol tree that contains file symbols as well, you should use `request_full_symbol_tree` instead.
         """
+        # Debug logging for Markdown files
+        import logging
+
+        logger = logging.getLogger(__name__)
+        full_path = os.path.join(self.repository_root_path, relative_file_path)
+
+        if relative_file_path.endswith(".md"):
+            logger.info("=== DEBUGGING MARKDOWN SYMBOLS ===")
+            logger.info(f"Language: {self.language}")
+            logger.info(f"Language ID: {self.language_id}")
+            logger.info(f"Repository root: {self.repository_root_path}")
+            logger.info(f"Relative file: {relative_file_path}")
+            logger.info(f"Full path: {full_path}")
+
+            # Check if this is the MarkdownLanguageServer
+            if hasattr(self, "__class__"):
+                logger.info(f"Language Server class: {self.__class__.__name__}")
+
+            # Check file content sample
+            if os.path.exists(full_path):
+                with open(full_path, encoding="utf-8") as f:
+                    first_lines = f.read(200)
+                    logger.info(f"First 200 chars of file: {first_lines[:200]}")
+            else:
+                logger.warning(f"File does not exist: {full_path}")
+
         # TODO: it's kinda dumb to not use the cache if include_body is False after include_body was True once
         #   Should be fixed in the future, it's a small performance optimization
-        cache_key = f"{relative_file_path}-{include_body}"
+        # Force cache invalidation for Markdown files during debugging
+        import time
+
+        cache_suffix = ""
+        if relative_file_path.endswith(".md"):
+            # Add timestamp to cache key to force refresh
+            cache_suffix = f"-{int(time.time())}"
+        cache_key = f"{relative_file_path}-{include_body}{cache_suffix}"
         with self.open_file(relative_file_path) as file_data:
             with self._cache_lock:
                 file_hash_and_result = self._document_symbols_cache.get(cache_key)
                 if file_hash_and_result is not None:
                     file_hash, result = file_hash_and_result
                     if file_hash == file_data.content_hash:
+                        if relative_file_path.endswith(".md"):
+                            logger.info(f"CACHE HIT: Returning cached document symbols for {relative_file_path}")
+                            all_symbols, root_symbols = result
+                            logger.info(f"Cached result: {len(all_symbols)} total, {len(root_symbols)} root symbols")
+                            if all_symbols:
+                                logger.info(f"First cached symbol: name='{all_symbols[0].get('name')}', kind={all_symbols[0].get('kind')}")
                         self.logger.log(f"Returning cached document symbols for {relative_file_path}", logging.DEBUG)
                         return result
                     else:
@@ -935,9 +876,34 @@ class SolidLanguageServer(ABC):
                     self.logger.log(f"No cache hit for symbols with {include_body=} in {relative_file_path}", logging.DEBUG)
 
             self.logger.log(f"Requesting document symbols for {relative_file_path} from the Language Server", logging.DEBUG)
-            response = self.server.send.document_symbol(
-                {"textDocument": {"uri": pathlib.Path(os.path.join(self.repository_root_path, relative_file_path)).as_uri()}}
-            )
+
+            uri = pathlib.Path(os.path.join(self.repository_root_path, relative_file_path)).as_uri()
+            request_params = {"textDocument": {"uri": uri}}
+
+            # Debug log the request for Markdown files
+            if relative_file_path.endswith(".md"):
+                logger.info(f"Sending document_symbol request with URI: {uri}")
+                logger.info(f"Request params: {request_params}")
+
+            response = self.server.send.document_symbol(request_params)
+
+            # Debug log the raw response for Markdown files
+            if relative_file_path.endswith(".md"):
+                if response:
+                    logger.info(f"Raw LSP response for {relative_file_path}: {len(response)} items")
+                    if response and len(response) > 0:
+                        first_item = response[0]
+                        logger.info(f"First response item: name='{first_item.get('name')}', kind={first_item.get('kind')}")
+                        # Log more detail about the response structure
+                        if "children" in first_item:
+                            logger.info(f"First item has {len(first_item['children'])} children")
+                            if first_item["children"]:
+                                logger.info(
+                                    f"First child: name='{first_item['children'][0].get('name')}', kind={first_item['children'][0].get('kind')}"
+                                )
+                else:
+                    logger.warning(f"No response from LSP for {relative_file_path}")
+
             if response is None:
                 self.logger.log(
                     f"Received None response from the Language Server for document symbols in {relative_file_path}. "
@@ -1194,7 +1160,25 @@ class SolidLanguageServer(ABC):
         """
         :return: the top-level symbols in the given file.
         """
-        _, document_roots = self.request_document_symbols(relative_file_path)
+        # Check if we're using the wrong language server for Markdown files
+        if relative_file_path.endswith(".md") and self.language != Language.MARKDOWN:
+            # Log warning and return empty list if not using Marksman for Markdown files
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                f"Attempting to get symbols from Markdown file {relative_file_path} using {self.language} language server. Markdown files should use Marksman."
+            )
+            # Return empty list to avoid incorrect symbols
+            return []
+
+        all_symbols, document_roots = self.request_document_symbols(relative_file_path)
+
+        # For Markdown files, return all symbols (headings) instead of just root symbols
+        # because Marksman returns a hierarchical structure with only one root
+        if self.language == Language.MARKDOWN and all_symbols:
+            return all_symbols
+
         return document_roots
 
     def request_overview(self, within_relative_path: str) -> dict[str, list[UnifiedSymbolInformation]]:

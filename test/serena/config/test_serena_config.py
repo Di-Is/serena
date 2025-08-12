@@ -39,36 +39,29 @@ class TestProjectConfigAutogenerate:
         assert f"project_name: {self.project_path.name}" in error_message
         assert "language: python" in error_message
 
-    def test_autogenerate_with_python_files(self):
-        """Test successful autogeneration with Python source files."""
-        # Create a Python file
-        python_file = self.project_path / "main.py"
-        python_file.write_text("def hello():\n    print('Hello, world!')\n")
+    def test_autogenerate_with_markdown_files(self):
+        """Test successful autogeneration with Markdown files."""
+        # Create a Markdown file
+        md_file = self.project_path / "README.md"
+        md_file.write_text("""# Test Project
+
+## Description
+""")
 
         # Run autogenerate
         config = ProjectConfig.autogenerate(self.project_path, save_to_disk=False)
 
         # Verify the configuration
         assert config.project_name == self.project_path.name
-        assert config.language == Language.PYTHON
-
-    def test_autogenerate_with_multiple_languages(self):
-        """Test autogeneration picks dominant language when multiple are present."""
-        # Create files for multiple languages
-        (self.project_path / "main.py").write_text("print('Python')")
-        (self.project_path / "util.py").write_text("def util(): pass")
-        (self.project_path / "small.js").write_text("console.log('JS');")
-
-        # Run autogenerate - should pick Python as dominant
-        config = ProjectConfig.autogenerate(self.project_path, save_to_disk=False)
-
-        assert config.language == Language.PYTHON
+        assert config.language == Language.MARKDOWN
 
     def test_autogenerate_saves_to_disk(self):
         """Test that autogenerate can save the configuration to disk."""
-        # Create a Go file
-        go_file = self.project_path / "main.go"
-        go_file.write_text("package main\n\nfunc main() {}\n")
+        # Create a Markdown file
+        md_file = self.project_path / "README.md"
+        md_file.write_text("""# Documentation
+
+This is a test.""")
 
         # Run autogenerate with save_to_disk=True
         config = ProjectConfig.autogenerate(self.project_path, save_to_disk=True)
@@ -78,7 +71,7 @@ class TestProjectConfigAutogenerate:
         assert config_path.exists()
 
         # Verify the content
-        assert config.language == Language.GO
+        assert config.language == Language.MARKDOWN
 
     def test_autogenerate_nonexistent_path(self):
         """Test that autogenerate raises FileNotFoundError for non-existent path."""
@@ -106,16 +99,20 @@ class TestProjectConfigAutogenerate:
 
     def test_autogenerate_custom_project_name(self):
         """Test autogenerate with custom project name."""
-        # Create a TypeScript file
-        ts_file = self.project_path / "index.ts"
-        ts_file.write_text("const greeting: string = 'Hello';\n")
+        # Create a Markdown file
+        md_file = self.project_path / "notes.md"
+        md_file.write_text("""# Notes
+
+- Item 1
+- Item 2
+""")
 
         # Run autogenerate with custom name
         custom_name = "my-custom-project"
         config = ProjectConfig.autogenerate(self.project_path, project_name=custom_name, save_to_disk=False)
 
         assert config.project_name == custom_name
-        assert config.language == Language.TYPESCRIPT
+        assert config.language == Language.MARKDOWN
 
     def test_autogenerate_error_message_format(self):
         """Test the specific format of the error message for better user experience."""
@@ -132,7 +129,7 @@ class TestProjectConfigAutogenerate:
         assert any("2." in line for line in error_lines)
 
         # Check for supported languages list
-        assert any("Python" in line and "TypeScript" in line for line in error_lines)
+        assert any("Markdown" in line for line in error_lines)
 
         # Check example includes comment about language options
-        assert any("# or typescript, java, csharp" in line for line in error_lines)
+        assert any("markdown" in line.lower() for line in error_lines)

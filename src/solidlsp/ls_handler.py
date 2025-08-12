@@ -52,7 +52,6 @@ class LanguageServerTerminatedException(Exception):
 
 
 class Request(ToStringMixin):
-
     @dataclass
     class Result:
         payload: PayloadLike | None = None

@@ -586,15 +586,45 @@ class LanguageServerSymbolRetriever:
 
         @classmethod
         def from_symbol(cls, symbol: LanguageServerSymbol) -> Self:
+            # Debug logging for Markdown files
+            import logging
+
+            logger = logging.getLogger(__name__)
+
+            # For Markdown files (SymbolKind.String = 15), use the simple name instead of the full path
+            # because Markdown headings in a hierarchical structure would have complex paths
+            if symbol.symbol_kind == 15:  # SymbolKind.String (used by Marksman for headings)
+                name = symbol.name
+                logger.debug(f"Processing Markdown symbol: name='{name}', kind={symbol.symbol_kind}")
+                return cls(name_path=name, kind=int(symbol.symbol_kind))
             return cls(name_path=symbol.get_name_path(), kind=int(symbol.symbol_kind))
 
     def get_symbol_overview(self, relative_path: str) -> dict[str, list[SymbolOverviewElement]]:
         path_to_unified_symbols = self._lang_server.request_overview(relative_path)
         result = {}
         for file_path, unified_symbols in path_to_unified_symbols.items():
+            # Debug logging
+            import logging
+
+            logger = logging.getLogger(__name__)
+            if file_path.endswith(".md"):
+                logger.info(f"Processing Markdown file {file_path}: {len(unified_symbols)} symbols")
+                if unified_symbols and len(unified_symbols) > 0:
+                    # Log first few symbols
+                    for i, sym in enumerate(unified_symbols[:5]):
+                        logger.info(f"  Symbol {i}: name='{sym.get('name')}', kind={sym.get('kind')}")
+
             # TODO: maybe include not just top-level symbols? We could filter by kind to exclude variables
             #  The language server methods would need to be adjusted for this.
-            result[file_path] = [self.SymbolOverviewElement.from_symbol(LanguageServerSymbol(s)) for s in unified_symbols]
+            elements = [self.SymbolOverviewElement.from_symbol(LanguageServerSymbol(s)) for s in unified_symbols]
+
+            # Log the converted elements for Markdown files
+            if file_path.endswith(".md"):
+                logger.info(f"Converted {len(elements)} elements for {file_path}")
+                for i, elem in enumerate(elements[:5]):
+                    logger.info(f"  Element {i}: name_path='{elem.name_path}', kind={elem.kind}")
+
+            result[file_path] = elements
         return result
 
 
